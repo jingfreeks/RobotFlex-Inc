@@ -1,6 +1,6 @@
 ## INSTRUCTION
 
-1.) pull the project
+1.) clone  the project git@github.com:jingfreeks/RobotFlex-Inc.git
 2.) yarn install
 3.) yarn start
 
