@@ -1,3 +1,15 @@
+## INSTRUCTION
+
+1.) pull the project
+2.) yarn install
+3.) yarn start
+
+### Feature
+1.) basic add delete search records
+2.) Sign in and Sign up
+3.) Firebase integration
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
