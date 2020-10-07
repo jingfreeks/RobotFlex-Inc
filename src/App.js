@@ -1,7 +1,15 @@
 import React,{Component} from 'react';
 import './App.css';
-import {CardList} from './component/card-list/card-list.component';
-import {SearchBox} from './component/search-box/search-box.component';
+import {Switch,Route,Redirect} from 'react-router-dom';
+import Header from './component/header';
+import HomePage from './pages/home';
+import SignInSignUpPage from './pages/Sign-in-Sign-up';
+import Addrecord from './pages/add';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import { checkUserSession } from './redux/users/actions';
+import { selectCurrentUser } from './redux/users/selectors';
+// import { setCurrentUser } from  './redux/users/actions';
 class App extends Component{
   constructor(){
     super();
@@ -10,36 +18,51 @@ class App extends Component{
       searchField:'',
     }
   }
-  componentDidMount=()=>{
-    this.fethData();
-  }
-  fethData=()=>{
-    fetch('https://jsonplaceholder.typicode.com/users')
-    .then(response=>response.json())
-    .then(users=>this.setState({robots:users}))
-  }
-  handleChange=(e)=>{
-    this.setState({searchField:e.target.value})
-  }
-  render(){
-    const {robots,searchField}=this.state
-    const filteredRobots = robots.filter(robots=>
-      robots.name.toLowerCase().includes(searchField.toLocaleLowerCase())
-    )
+  unsubscribeFormAuth=null;
 
+  componentDidMount(){
+    const { checkUserSession } = this.props;
+    checkUserSession();
+
+  }
+  componentWillUnmount(){
+    this.unsubscribeFormAuth()
+  }
+
+  render(){
     return (
       <div className="App">
-        <h1>Robotex Inc</h1>
-        <SearchBox 
-          placeholder={'search robbots'}
-          handleChange={
-            this.handleChange
-          }
-          value={this.state.searchField} 
-        />
-        <CardList robots={filteredRobots} />
+        <Header/>
+
+        <Switch>
+          <Route exact path='/' component={HomePage} />
+          <Route exact path='/add' component={Addrecord} />
+          <Route
+            exact
+            path='/signin'
+            render={() =>
+              this.props.currentUser ? (
+                <Redirect to='/' />
+              ) : (
+                <SignInSignUpPage />
+              )
+            }
+          />
+        </Switch>
       </div>
     );
   }
 }
-export default App;
+
+// export default App;
+const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser
+});
+const mapDispatchToProps = dispatch => ({
+  checkUserSession: () => dispatch(checkUserSession())
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
